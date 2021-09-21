@@ -1,11 +1,35 @@
 import re
+import smtplib
 import threading
 import time
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from queue import Queue
 
 import requests
 from bs4 import BeautifulSoup
 from goto import with_goto
+
+
+class EmailSender:
+
+    def __init__(self, addr, pwd):
+        self.smtp = addr.split("@")[1]
+        self.addr = addr
+        self.pwd = pwd
+
+    def send(self, subject, content):
+        msg = MIMEMultipart("mixed")
+        msg["Subject"] = subject
+        msg["From"] = self.addr
+        msg["To"] = self.addr
+        text = MIMEText(content, "html", "utf-8")
+        msg.attach(text)
+        smtp = smtplib.SMTP()
+        smtp.connect(self.smtp)
+        smtp.login(self.addr, self.pwd)
+        smtp.sendmail(self.addr, self.addr, msg.as_string())
+        smtp.quit()
 
 
 class EPCBot(threading.Thread):
@@ -48,8 +72,13 @@ class EPCBot(threading.Thread):
         # 初始化相关参数
         self.ustc_id = config["ustc_id"]
         self.ustc_pwd = config["ustc_pwd"]
+        self.email_addr = config["email_addr"]
+        self.email_pwd = config["email_pwd"]
         self.type_filter = config["type_filter"]
         self.wday_filter = config["wday_filter"]
+
+        # 初始化邮件通知类
+        self.email_sender = EmailSender(self.email_addr, self.email_pwd)
 
         # 开启session会话
         self.session = requests.Session()
@@ -403,12 +432,13 @@ class EPCBot(threading.Thread):
             self.print_log(booked_epc)
             self.print_log("")
         else:
-            self.print_log("Failed to fetch your latest schedule. Retrying...\n")
+            self.print_log(
+                "Failed to fetch your latest schedule. Retrying...\n")
             goto .new_loop
 
         # 判断是否停止循环
         label .check_loop
-        if not self.is_stopped.is_set(): 
+        if not self.is_stopped.is_set():
             self.print_log(time.localtime(time.time()))
         else:
             goto .end_loop
@@ -420,11 +450,11 @@ class EPCBot(threading.Thread):
             goto .check_loop
 
         # 计算最优EPC课程列表
-        optimal_epc, booking_epc, canceling_epc = self.optimize_epc(booked_epc, \
-            bookable_epc, hours_max)
+        optimal_epc, booking_epc, canceling_epc = self.optimize_epc(booked_epc,
+                                                                    bookable_epc, hours_max)
 
         # 判断当前EPC课表是否需要更新
-        if len(booking_epc) == 0: 
+        if len(booking_epc) == 0:
             self.print_log("No operation to be done.\n")
             goto .check_loop
 
@@ -455,9 +485,7 @@ class EPCBot(threading.Thread):
             self.print_log(booked_epc)
             self.print_log("")
             subject = "EPC Schedule Updated"
-            brief   = "EPC-Bot has optimized your schedule. Check your mailbox for more infomation."
-            detail  = self.list2html(booked_epc)
-            self.desktop_toaster.toast(subject, brief)
+            detail = self.list2html(booked_epc)
             self.email_sender.send(subject, detail)
             goto .check_loop
         else:
@@ -467,9 +495,9 @@ class EPCBot(threading.Thread):
         self.print_log(time.localtime(time.time()))
         self.print_log("EPC-Bot is stopped.\n")
 
-
     # ================================================================
     # 停止EPC-BOT
     # ================================================================
+
     def stop(self):
         self.is_stopped.set()
