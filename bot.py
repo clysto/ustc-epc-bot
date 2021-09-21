@@ -206,7 +206,7 @@ class EPCBot(threading.Thread):
                     ),
                     False
                 ):
-                    return
+                    continue
                 bookable_epc.append(
                     {
                         "unit": td[0].get_text(separator=" "),  # 预约单元
