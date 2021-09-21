@@ -4,6 +4,8 @@
 ![Compiler](https://img.shields.io/badge/Build-Python%203.6-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-GPL,%20v3.0-blue.svg)
 
+> 此版本为取消了GUI的版本，python3.9中goto-stament的问题参见[AttributeError: 'array.array' object has no attribute 'tostring' #35](https://github.com/snoack/python-goto/issues/35#issuecomment-881808547)
+
 版本 v2.1 更新日志(2020_03_30):
 - 支持自动选课, 根据**课表优化算法**自动优化课表.
 - 支持**课程时间**和**课程类型**的自定义筛选.
@@ -14,12 +16,14 @@
 
 ## 目录
 
-- [安装及使用](#安装及使用)
-    + [针对普通用户](#针对普通用户)
-    + [针对 Python 程序员](#针对-python-程序员)
-- [课表优化算法](#课表优化算法)
-- [开发及测试人员](#开发及测试人员)
-- [参考文献](#参考文献)
+- [中国科学技术大学EPC系统自动抢课脚本](#中国科学技术大学epc系统自动抢课脚本)
+  - [目录](#目录)
+  - [安装及使用](#安装及使用)
+    - [针对普通用户](#针对普通用户)
+    - [针对 Python 程序员](#针对-python-程序员)
+  - [课表优化算法](#课表优化算法)
+  - [开发及测试人员](#开发及测试人员)
+  - [参考文献](#参考文献)
 
 ## 安装及使用
 

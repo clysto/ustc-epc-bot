@@ -18,3 +18,7 @@ dist/
 # User config file
 /.vscode
 config.json
+
+# direnv
+.envrc
+.direnv

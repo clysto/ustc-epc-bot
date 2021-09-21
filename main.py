@@ -1,7 +1,7 @@
-from tkinter import *
-from gui import *
+import json
+from bot import EPCBot
 
-
-root = Tk()
-GUI(root)
-root.mainloop()
+with open("config.json") as f:
+    config = json.load(f)
+    epc_bot = EPCBot(config)
+    epc_bot.run()
