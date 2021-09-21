@@ -174,7 +174,7 @@ class EPCBot(threading.Thread):
             resp = self.session.get(type_url)
             if resp.status_code != 200:
                 self.print_log(
-                    "Failed to fetch bookable classes of %s." % epc_name)
+                    "Failed to fetch bookable classes of %s." % type_url)
                 with mutex:
                     queue.put((bookable_epc, False))
                 return
