@@ -187,10 +187,24 @@ class EPCBot(threading.Thread):
                 date_ = td[5].get_text(separator=" ").split(" ")[0]
                 time_ = td[5].get_text(separator=" ").split(" ")[1]
                 wday_ = time.strftime("%A", time.strptime(date_, "%Y/%m/%d"))
+                print({
+                    "unit": td[0].get_text(separator=" "),  # 预约单元
+                    "prof": td[3].get_text(separator=" "),  # 教师
+                    "hour": td[4].get_text(separator=" "),  # 学时
+                    "week": td[1].get_text(separator=" "),  # 教学周
+                    "wday": td[2].get_text(separator=" "),  # 星期
+                    "date": td[5].get_text(separator=" "),  # 上课时间
+                    "room": td[6].get_text(separator=" "),  # 上课教室
+                    "_url": form[i - 1].get("action"),  # 表单链接
+                    "_new": True,  # 是否为可预约课程
+                })
                 if not next(
-                    item["enable"]
-                    for item in self.wday_filter
-                    if item["wday"] == wday_ and item["time"] == time_
+                    (
+                        item["enable"]
+                        for item in self.wday_filter
+                        if item["wday"] == wday_ and item["time"] == time_
+                    ),
+                    False
                 ):
                     return
                 bookable_epc.append(
